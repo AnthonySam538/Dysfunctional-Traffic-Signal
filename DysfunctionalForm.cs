@@ -27,6 +27,11 @@ public class DysfunctionalForm : Form
   private const int formHeight = 900;
   private const int formWidth = formHeight * 16/9; //creates a 16:9 aspect ratio
 
+  // Create the needed Rectangles and SolidBrush
+  private static Rectangle yellowRectangle; //used for the yellow bar at the bottom
+  private static Rectangle redCircle; //used for drawing the blinking light
+  private static SolidBrush paintbrush = new SolidBrush(Color.Red); //makes the blinking light red
+
   // Create Controls (Graphical objects on screen that provide the interface to the user)
   private Button pauseButton = new Button();
   private Button exitButton = new Button();
@@ -34,10 +39,6 @@ public class DysfunctionalForm : Form
 
   // Create Timer (It makes the light blink)
   private static System.Timers.Timer myTimer = new System.Timers.Timer(1000);
-
-  // Create the Rectangle and SolidBrush used in drawing the circle
-  private static Rectangle myRectangle = new Rectangle(formWidth/2 - formHeight*7/10 / 2, formHeight/2 - formHeight*7/10 / 2, formHeight * 7/10, formHeight * 7/10); //creates a Rectangle centered in the middle | also used in Invalidate()
-  private static SolidBrush paint_brush = new SolidBrush(Color.Red);
 
   // This is the button size for all buttons on the form
   Size myButtonSize = new Size(85, 25);
@@ -49,9 +50,15 @@ public class DysfunctionalForm : Form
     Size = new Size(formWidth,formHeight); //size of the form/window
     BackColor = Color.LawnGreen; //background color of the form/window
 
-    // Set up the title
+    // Set up the two Rectangles
+    yellowRectangle.Size = new Size(formWidth, formHeight/10); //takes up 10% of the form
+    yellowRectangle.Location = new Point(0, formHeight-yellowRectangle.Height); //at the bottom
+    redCircle.Size = new Size(formHeight * 7/10, formHeight * 7/10); //70% of formHeight, since formHeight < formWidth
+    redCircle.Location = new Point((formWidth-redCircle.Width)/2, (formHeight-redCircle.Height)/2); //in the middle of the center
+
+    // Set up the title label
     title.Text = "Dysfunctional Traffic Signal by Anthony Sam";
-    title.Size = new Size(formWidth, formHeight / 10);
+    title.Size = yellowRectangle.Size;
     title.Location = new Point(0,0);
     title.BackColor = Color.Cyan;
     title.TextAlign = ContentAlignment.MiddleCenter;
@@ -59,13 +66,13 @@ public class DysfunctionalForm : Form
     // Set up the pause button
     pauseButton.Text = "Pause";
     pauseButton.Size = myButtonSize;
-    pauseButton.Location = new Point(formWidth/2 - 2*myButtonSize.Width, formHeight*19/20 - myButtonSize.Height/2); //in the middle of the yellow band
+    pauseButton.Location = new Point(formWidth/2 - 2*myButtonSize.Width, yellowRectangle.Top+(yellowRectangle.Height-myButtonSize.Height)/2); //in the middle of the yellow band
     pauseButton.BackColor = Color.DarkOrchid;
 
     // Set up the exit button
     exitButton.Text = "Exit";
     exitButton.Size = myButtonSize;
-    exitButton.Location = new Point(pauseButton.Location.X + 3*myButtonSize.Width, pauseButton.Location.Y); //you can fit 2 more buttons inbetween
+    exitButton.Location = new Point(pauseButton.Right + 2*myButtonSize.Width, pauseButton.Top); //you can fit 2 more buttons inbetween
     exitButton.BackColor = Color.Magenta;
 
     // Add the controls to the form
@@ -87,8 +94,8 @@ public class DysfunctionalForm : Form
   {
     Graphics graphics = e.Graphics;
 
-    graphics.FillRectangle(Brushes.Yellow, 0, formHeight * 9/10, formWidth, formHeight/10); //creates a yellow rectangle at the bottom
-    graphics.FillEllipse(paint_brush, myRectangle);
+    graphics.FillRectangle(Brushes.Yellow, yellowRectangle); //creates a yellow rectangle at the bottom
+    graphics.FillEllipse(paintbrush, redCircle);
 
     // This calls the superclass's OnPaint()
     base.OnPaint(e);
@@ -97,18 +104,18 @@ public class DysfunctionalForm : Form
   // When myTimer has ticked
   protected void toggleLight(Object sender, ElapsedEventArgs evt)
   {
-    if(paint_brush.Color != Color.Transparent)
+    if(paintbrush.Color != Color.Transparent)
     {
       System.Console.WriteLine("The timer has toggled the light. The light will now turn off.");
-      paint_brush.Color = Color.Transparent;
+      paintbrush.Color = Color.Transparent;
     }
     else
     {
       System.Console.WriteLine("The timer has toggled the light. The light will now turn on.");
-      paint_brush.Color = Color.Red;
+      paintbrush.Color = Color.Red;
     }
 
-    Invalidate(myRectangle);
+    Invalidate(redCircle);
   }
 
   // When pauseButton is clicked
