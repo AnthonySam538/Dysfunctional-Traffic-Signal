@@ -23,10 +23,6 @@ using System.Timers;
 
 public class DysfunctionalForm : Form
 {
-  // Set the size of the window (Also used with positioning various elements)
-  private const int formHeight = 900;
-  private const int formWidth = formHeight * 16/9; //creates a 16:9 aspect ratio
-
   // Create the needed Rectangles and SolidBrush
   private static Rectangle yellowRectangle; //used for the yellow bar at the bottom
   private static Rectangle redCircle; //used for drawing the blinking light
@@ -40,40 +36,35 @@ public class DysfunctionalForm : Form
   // Create Timer (It makes the light blink)
   private static System.Timers.Timer myTimer = new System.Timers.Timer(1000);
 
-  // This is the button size for all buttons on the form
-  Size myButtonSize = new Size(85, 25);
-
   public DysfunctionalForm() //The constructor of this class
   {
     // Set up the form/window
+    Height = 900; //height of the form/window (in pixels)
+    Width = Height * 16/9; //width of the form/window (in pixels)
     Text = "Dysfunctional Traffic Signal"; //name of the form/window
-    Size = new Size(formWidth,formHeight); //size of the form/window
     BackColor = Color.LawnGreen; //background color of the form/window
 
     // Set up the two Rectangles
-    yellowRectangle.Size = new Size(formWidth, formHeight/10); //takes up 10% of the form
-    yellowRectangle.Location = new Point(0, formHeight-yellowRectangle.Height); //at the bottom
-    redCircle.Size = new Size(formHeight * 7/10, formHeight * 7/10); //70% of formHeight, since formHeight < formWidth
-    redCircle.Location = new Point((formWidth-redCircle.Width)/2, (formHeight-redCircle.Height)/2); //in the middle of the center
+    yellowRectangle.Size = new Size(Width, Height/10); //takes up 10% of the form
+    yellowRectangle.Location = new Point(0, Height-yellowRectangle.Height); //at the bottom
+    redCircle.Size = new Size(Height * 7/10, Height * 7/10); //70% of Height, since Height < Width
+    redCircle.Location = new Point((Width-redCircle.Width)/2, (Height-redCircle.Height)/2); //in the middle of the center
 
     // Set up the title label
     title.Text = "Dysfunctional Traffic Signal by Anthony Sam";
     title.Size = yellowRectangle.Size;
-    title.Location = new Point(0,0);
     title.BackColor = Color.Cyan;
     title.TextAlign = ContentAlignment.MiddleCenter;
 
+    // Set up the exit button (a bit out of order, I know)
+    exitButton.Text = "Exit";
+    exitButton.Location = new Point(Width/2 + exitButton.Width, yellowRectangle.Top+(yellowRectangle.Height-pauseButton.Height)/2); //in the middle of the yellow band
+    exitButton.BackColor = Color.Magenta;
+
     // Set up the pause button
     pauseButton.Text = "Pause";
-    pauseButton.Size = myButtonSize;
-    pauseButton.Location = new Point(formWidth/2 - 2*myButtonSize.Width, yellowRectangle.Top+(yellowRectangle.Height-myButtonSize.Height)/2); //in the middle of the yellow band
+    pauseButton.Location = new Point(exitButton.Left - 3*pauseButton.Width, exitButton.Top); //you can fit 2 more buttons inbetween
     pauseButton.BackColor = Color.DarkOrchid;
-
-    // Set up the exit button
-    exitButton.Text = "Exit";
-    exitButton.Size = myButtonSize;
-    exitButton.Location = new Point(pauseButton.Right + 2*myButtonSize.Width, pauseButton.Top); //you can fit 2 more buttons inbetween
-    exitButton.BackColor = Color.Magenta;
 
     // Add the controls to the form
     Controls.Add(title);
